@@ -20,4 +20,5 @@ from WebApp import views
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.index, name='index'),
+    url(r'^detect/$', views.upload_image, name='detect'),
 ]
