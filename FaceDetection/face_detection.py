@@ -23,7 +23,7 @@ class FaceDetection:
     def detect_faces(self):
         for resized_image in pyramid_gaussian(self.base_image, self.downscale):
             for window in self._sliding_window(resized_image):
-                if window.image.shape[0] != self.window_size or window.image.shape[1] != self.window_size:
+                if window.image.shape[0] != self.window_size[1] or window.image.shape[1] != self.window_size[0]:
                     continue
 
                 window_eq = self._hist_equalization(window.image)
