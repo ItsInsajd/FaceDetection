@@ -17,15 +17,18 @@
     <div class="container-fluid upload-form">
         <div class="panel">
             <div class="panel-body">
+                {% if image %}
+                <img src="{{ image.docfile.url }}" />
+                {% else %}
                 <div class="col-xs-6 add-file">
-                    <form method="post" action="/detect/" enctype="multipart/form-data">
+                    <form method="post" action="/" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="form-group">
-                            <label>Image</label>
+                            <label>Photo</label>
                             {{ form.docfile }}
                             <p class="help-block">Select image file from file system</p>
                         </div>
-                        <p><input class="btn btn-primary btn-lg" type="submit" value="Add image"/></p>
+                        <p><input class="btn btn-primary btn-lg" type="submit" value="Send to detect"/></p>
                     </form>
                 </div>
                 <div class="row">
@@ -39,6 +42,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
