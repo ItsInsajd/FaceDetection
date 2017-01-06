@@ -2,6 +2,11 @@ import numpy
 from skimage.transform import pyramid_gaussian
 from skimage import exposure, img_as_float
 from skimage import io
+from sklearn.datasets import fetch_olivetti_faces
+import numpy as np
+import pickle
+import matplotlib.pyplot as plt
+from sklearn.neural_network import MLPClassifier
 
 io.use_plugin('matplotlib')
 
@@ -11,6 +16,18 @@ class Window:
         self.x = x
         self.y = y
         self.image = image
+
+
+class NeuralNetwork:
+    def __init__(self): pass
+
+    def base_train(self):
+        data = fetch_olivetti_faces()
+        clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(78,), random_state=1)
+        X_train = data.data
+        y_train = np.ones((len(X_train),), dtype=np.int)
+        model = clf.fit(X_train, y_train)
+        pickle.dump(model, open('neural_model.sav', 'wb'))
 
 
 class FaceDetection:
@@ -26,7 +43,8 @@ class FaceDetection:
                 if window.image.shape[0] != self.window_size[1] or window.image.shape[1] != self.window_size[0]:
                     continue
 
-                window_eq = self._hist_equalization(window.image)
+                X = self._hist_equalization(window.image)
+
                 # call neural network here
 
         return self.base_image
