@@ -1,4 +1,5 @@
 import numpy
+from django.core.files import File
 from django.template import loader
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -8,6 +9,8 @@ from FaceDetection.face_detection import FaceDetection
 from PIL import Image as Img
 from skimage import data
 from scipy.misc import toimage
+from skimage import color
+import matplotlib.pyplot as plt
 
 
 def index(request):
@@ -15,15 +18,18 @@ def index(request):
         form = ImageForm(request.POST, request.FILES)
 
         if form.is_valid():
-            # Image(docfile=request.FILES.get('docfile')).save()
+            file = Image(docfile=request.FILES.get('docfile'))
+            # file.save()
 
-            file = request.FILES.get('docfile')
-            raw_image = Img.open(file)
-            detector = FaceDetection(raw_image, 4, [20, 20])
+            image_array = numpy.asarray(Img.open(file.docfile))
+            grayscale = color.rgb2gray(image_array)
+
+            detector = FaceDetection(grayscale, [64, 64])
             detected = detector.detect_faces()
             image = toimage(detected)
-
-            return render(request, 'FaceDetection/index.html', {'image': image})
+            # file.docfile = File(image)
+            # file.save()
+            return render(request, 'FaceDetection/index.html', {'image': file})
         else:
             return HttpResponse(404)
 

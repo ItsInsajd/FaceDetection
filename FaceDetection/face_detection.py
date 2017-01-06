@@ -1,4 +1,5 @@
 import numpy
+from math import floor
 from skimage.transform import pyramid_gaussian
 from skimage import exposure, img_as_float
 from skimage import io
@@ -31,9 +32,9 @@ class NeuralNetwork:
 
 
 class FaceDetection:
-    def __init__(self, base_image, step_size, window_size):
+    def __init__(self, base_image, window_size):
         self.base_image = base_image
-        self.step_size = step_size
+        self.step_size = self._calculate_step_size()
         self.window_size = window_size
         self.downscale = 2
 
@@ -43,9 +44,9 @@ class FaceDetection:
                 if window.image.shape[0] != self.window_size[1] or window.image.shape[1] != self.window_size[0]:
                     continue
 
-                X = self._hist_equalization(window.image)
-
-                # call neural network here
+                X = self._hist_equalization(window.image).ravel()
+                clf = pickle.load(open("neural_model.sav", "rb"))
+                result = clf.predict([X])
 
         return self.base_image
 
@@ -60,3 +61,8 @@ class FaceDetection:
         window_rescale = exposure.rescale_intensity(float_window, in_range=(p2, p98))
 
         return exposure.equalize_hist(window_rescale)
+
+    def _calculate_step_size(self):
+        size = max(self.base_image.shape)
+
+        return floor(size/40)
