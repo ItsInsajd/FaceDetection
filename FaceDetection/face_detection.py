@@ -8,6 +8,8 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 from sklearn.neural_network import MLPClassifier
+from PIL.ImageDraw import Image as Img, Draw
+from skimage import color
 
 io.use_plugin('matplotlib')
 
@@ -39,7 +41,11 @@ class FaceDetection:
         self.downscale = 2
 
     def detect_faces(self):
-        for resized_image in pyramid_gaussian(self.base_image, self.downscale):
+        detection_points = []
+        image_array = numpy.asarray(self.base_image)
+        grayscale = color.rgb2gray(image_array)
+
+        for idx, resized_image in enumerate(pyramid_gaussian(grayscale, self.downscale)):
             for window in self._sliding_window(resized_image):
                 if window.image.shape[0] != self.window_size[1] or window.image.shape[1] != self.window_size[0]:
                     continue
@@ -47,6 +53,11 @@ class FaceDetection:
                 X = self._hist_equalization(window.image).ravel()
                 clf = pickle.load(open("neural_model.sav", "rb"))
                 result = clf.predict([X])
+
+                if result[0] == 1:
+                    detection_points.append([window.x, window.y, idx])
+
+        self._mark_faces(detection_points)
 
         return self.base_image
 
@@ -63,6 +74,19 @@ class FaceDetection:
         return exposure.equalize_hist(window_rescale)
 
     def _calculate_step_size(self):
-        size = max(self.base_image.shape)
+        size = max(np.asarray(self.base_image).shape)
 
-        return floor(size/40)
+        return floor(size / 40)
+
+    def _mark_faces(self, points=list):
+        if points:
+            for point in points:
+                self._draw_rectangle(point[0], point[1], point[2])
+
+    def _draw_rectangle(self, x, y, scale):
+        end_x = x + self.window_size[0] + scale * self.downscale
+        end_y = y + self.window_size[1] + scale * self.downscale
+
+        draw = Draw(self.base_image)
+        draw.rectangle([x, y, end_x, end_y], outline='green')
+        del draw

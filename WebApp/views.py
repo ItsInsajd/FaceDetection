@@ -9,7 +9,6 @@ from FaceDetection.face_detection import FaceDetection
 from PIL import Image as Img
 from skimage import data
 from scipy.misc import toimage
-from skimage import color
 import matplotlib.pyplot as plt
 
 
@@ -20,13 +19,12 @@ def index(request):
         if form.is_valid():
             file = Image(docfile=request.FILES.get('docfile'))
             # file.save()
+            image = Img.open(file.docfile)
 
-            image_array = numpy.asarray(Img.open(file.docfile))
-            grayscale = color.rgb2gray(image_array)
-
-            detector = FaceDetection(grayscale, [64, 64])
+            detector = FaceDetection(image, [64, 64])
             detected = detector.detect_faces()
             image = toimage(detected)
+            image.save('detected.png') # for debugging purposes
             # file.docfile = File(image)
             # file.save()
             return render(request, 'FaceDetection/index.html', {'image': file})
