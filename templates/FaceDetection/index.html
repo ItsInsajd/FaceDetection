@@ -18,7 +18,7 @@
         <div class="panel">
             <div class="panel-body">
                 {% if image %}
-                <img src="{{ image.docfile.url }}" />
+                <img src="{{ MEDIA_URL }}{{ image.docfile.url }}" />
                 {% else %}
                 <div class="col-xs-6 add-file">
                     <form method="post" action="/" enctype="multipart/form-data">
