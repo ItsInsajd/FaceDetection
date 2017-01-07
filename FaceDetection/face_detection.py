@@ -84,8 +84,11 @@ class FaceDetection:
                 self._draw_rectangle(point[0], point[1], point[2])
 
     def _draw_rectangle(self, x, y, scale):
-        end_x = x + self.window_size[0] + scale * self.downscale
-        end_y = y + self.window_size[1] + scale * self.downscale
+        resize = scale * self.downscale
+        x *= resize
+        y *= resize
+        end_x = x + self.window_size[0] * resize
+        end_y = y + self.window_size[1] * resize
 
         draw = Draw(self.base_image)
         draw.rectangle([x, y, end_x, end_y], outline='green')
