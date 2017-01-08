@@ -48,7 +48,7 @@ class FaceDetection:
                 else:
                     nonface+=1
             print(idx)
-            
+
         self._mark_faces(detection_points)
         print(str(face) + ' ' + str(nonface))
 
@@ -78,9 +78,12 @@ class FaceDetection:
 
     def _draw_rectangle(self, x, y, scale):
         if scale == 0:
-            scale = 1/self.downscale
+            resize = 1
+        else:
+            resize = scale * self.downscale
 
-        resize = scale * self.downscale
+        x *= resize
+        y *= resize
         end_x = x + self.window_size[0] * resize
         end_y = y + self.window_size[1] * resize
         # print('x = ' + str(x) + ' y = ' + str(y) + ' end_x = ' + str(end_x) + ' end_y = ' + str(end_y))
