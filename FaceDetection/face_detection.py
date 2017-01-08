@@ -47,11 +47,11 @@ class FaceDetection:
                     detection_points.append([window.x, window.y, idx])
                 else:
                     nonface+=1
-            print idx
-
+            print(idx)
+            
         self._mark_faces(detection_points)
+        print(str(face) + ' ' + str(nonface))
 
-        print str(face) + " " + str(nonface)
         return self.base_image
 
     def _sliding_window(self, image):
@@ -77,12 +77,13 @@ class FaceDetection:
                 self._draw_rectangle(point[0], point[1], point[2])
 
     def _draw_rectangle(self, x, y, scale):
-        resize = scale
-        #x *= resize
-        #y *= resize
+        if scale == 0:
+            scale = 1/self.downscale
+
+        resize = scale * self.downscale
         end_x = x + self.window_size[0] * resize
         end_y = y + self.window_size[1] * resize
-
+        # print('x = ' + str(x) + ' y = ' + str(y) + ' end_x = ' + str(end_x) + ' end_y = ' + str(end_y))
         draw = Draw(self.base_image)
         draw.rectangle([x, y, end_x, end_y], outline='green')
         del draw
