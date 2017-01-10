@@ -13,6 +13,7 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+from django.views.static import serve
 from django.conf.urls import include, url
 from django.contrib import admin
 from WebApp import views
@@ -21,8 +22,8 @@ from FaceDetection import settings
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.index, name='index'),
-    #url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
-    #        'document_root': settings.MEDIA_ROOT,
-    #    }),
-    # url(r'^detect/$', views.upload_image, name='detect'),
+    url(r'^media/(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT,
+       }),
+    #url(r'^detect/$', views.upload_image, name='detect'),
 ]

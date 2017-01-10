@@ -8,6 +8,7 @@ from skimage import color
 from skimage import exposure, img_as_float
 from skimage import io
 from skimage.transform import pyramid_gaussian
+import matplotlib.pyplot as plt
 
 io.use_plugin('matplotlib')
 
@@ -24,7 +25,7 @@ class FaceDetection:
         self.base_image = base_image
         self.step_size = int(self._calculate_step_size())
         self.window_size = window_size
-        self.downscale = 10
+        self.downscale = 2
 
     def detect_faces(self):
         detection_points = []
@@ -34,19 +35,23 @@ class FaceDetection:
         face = 0
         nonface = 0
         clf = pickle.load(open("neural_model.sav", "rb"))
+        clf2 = pickle.load(open("neural_model_1.sav", "rb"))
         for idx, resized_image in enumerate(pyramid_gaussian(grayscale, self.downscale)):
             for window in self._sliding_window(resized_image):
                 if window.image.shape[0] != self.window_size[1] or window.image.shape[1] != self.window_size[0]:
                     continue
 
                 X = self._hist_equalization(window.image).ravel()
-                result = clf.predict([X])
+                result1 = clf.predict([X])
+                result2 = clf2.predict([X])
 
-                if result[0] == 1:
+                if result1[0] == 1 and result2[0] == 1:
                     face+=1
                     detection_points.append([window.x, window.y, idx])
                 else:
                     nonface+=1
+                    if nonface % 20 == 0:
+                        plt.imsave('dataset/img'+str(nonface)+'.jpg', window.image, cmap='gray')
             print(idx)
 
         self._mark_faces(detection_points)
@@ -69,7 +74,7 @@ class FaceDetection:
     def _calculate_step_size(self):
         size = max(np.asarray(self.base_image).shape)
 
-        return floor(size / 40)
+        return floor(size / 100)
 
     def _mark_faces(self, points):
         if points:
