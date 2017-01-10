@@ -21,8 +21,8 @@ from FaceDetection import settings
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.index, name='index'),
-    #url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
-    #        'document_root': settings.MEDIA_ROOT,
-    #    }),
-    # url(r'^detect/$', views.upload_image, name='detect'),
+    url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+        'document_root': settings.MEDIA_ROOT,
+    }),
+    url(r'^detect/$', views.upload_image, name='detect'),
 ]

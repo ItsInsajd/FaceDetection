@@ -16,6 +16,14 @@ import matplotlib.pyplot as plt
 
 
 def index(request):
+    images = Image.objects.all().order_by('-id')[:3]
+    return render(request, 'FaceDetection/index.html', {
+        'images': images,
+        'partial': 'FaceDetection/main.html'
+    })
+
+
+def upload_image(request):
     if request.method == 'POST':
         form = ImageForm(request.POST, request.FILES)
 
@@ -30,14 +38,16 @@ def index(request):
             detected.save(img_io, format='PNG')
             img.docfile.save(img.docfile.name, ContentFile(img_io.getvalue()))
 
-            return render(request, 'FaceDetection/index.html', {'image': img})
+            return render(request, 'FaceDetection/index.html', {
+                'data': img,
+                'partial': 'FaceDetection/detect.html'
+            })
         else:
             return HttpResponse(404)
 
     else:
-        model = Image.objects.all()
-        images = model[:3]
         form = ImageForm()
-        return render(request, 'FaceDetection/index.html', {'form': form})
-
-# def upload_image(request):
+        return render(request, 'FaceDetection/index.html', {
+            'form': form,
+            'partial': 'FaceDetection/detect.html'
+        })

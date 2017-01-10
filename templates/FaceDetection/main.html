@@ -1,0 +1,19 @@
+<div class="container">
+    <div class="container row">
+        <form action="{% url 'detect' %}" method="GET">
+            <button class="btn btn-primary btn-lg" type="submit">Dodaj zdjęcie...</button>
+        </form>
+    </div>
+    <div>
+        <h2 class="text-center"><strong>Last detections</strong></h2>
+    </div>
+    <div class="row">
+        {% for image in images %}
+            <div class="col-md-4 col-sm-4">
+                <div class="thumbnail">
+                    <img src="{{ MEDIA_URL }}{{ image.docfile.url }}" class="img-responsive" alt="Sliding windows">
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
